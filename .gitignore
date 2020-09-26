@@ -120,6 +120,8 @@ fabric.properties
 
 # Package Files #
 *.jar
+!lab1.jar
+
 *.war
 *.nar
 *.ear
