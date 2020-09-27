@@ -12,12 +12,12 @@ public class CustomComputations implements Computations{
     }
 
     @Override
-    public int computeF(int x) throws InterruptedException {
+    public Integer computeF(int x) {
         return this.f.apply(x);
     }
 
     @Override
-    public int computeG(int x) throws InterruptedException {
+    public Integer computeG(int x) {
         return this.g.apply(x);
     }
 }

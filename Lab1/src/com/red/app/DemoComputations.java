@@ -10,12 +10,22 @@ public class DemoComputations implements Computations{
     }
 
     @Override
-    public int computeF(int x) throws InterruptedException {
-        return IntOps.funcF(this.zeroBasedDemoCaseNo);
+    public Integer computeF(int x) {
+        try {
+            return IntOps.funcF(this.zeroBasedDemoCaseNo);
+        }
+        catch (InterruptedException e) {
+            return null;
+        }
     }
 
     @Override
-    public int computeG(int x) throws InterruptedException {
-        return IntOps.funcG(this.zeroBasedDemoCaseNo);
+    public Integer computeG(int x) {
+        try {
+            return IntOps.funcG(this.zeroBasedDemoCaseNo);
+        }
+        catch (InterruptedException e) {
+            return null;
+        }
     }
 }
