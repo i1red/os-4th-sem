@@ -9,5 +9,7 @@ My binary operation is multiplication of Java Integers:\
  -if f or g is 0 then return 0\
  -if f or g is null then return null (undefined result, for example sqrt(-1) should return null)\
  -else return f * g
+
+Cancellation is performed using Ctrl+C
     
 

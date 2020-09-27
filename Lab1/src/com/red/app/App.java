@@ -1,5 +1,7 @@
 package com.red.app;
 
+import sun.misc.Signal;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Scanner;
@@ -7,6 +9,11 @@ import java.nio.channels.Pipe;
 import java.util.function.Function;
 
 public class App {
+    private static boolean fComputed = false;
+    private static boolean gComputed = false;
+    private static final Ref<Integer> fResult = new Ref<>();
+    private static final Ref<Integer> gResult = new Ref<>();
+
     private static Computations createComputations(Integer caseNo) {
         if (caseNo != null && 1 <= caseNo && caseNo <= 6) {
             return new DemoComputations(caseNo);
@@ -63,8 +70,10 @@ public class App {
             Integer resultValue = result.getValue();
             System.out.printf("%s has been computed. Result is %s\n",
                     computationName, resultValue != null ? resultValue : Const.UNDEFINED);
+
             return true;
         }
+
         return false;
     }
 
@@ -82,24 +91,42 @@ public class App {
         }
 
         return fResult * gResult;
+    }
 
+    private static void onCancellation() {
+        if (!fComputed && !gComputed) {
+            System.out.println("\nAborted by user. f and g have not been computed");
+        }
+        else if (!fComputed) {
+            System.out.printf("\nAborted by user. f has not been computed, g is not %d\n", Const.OP_ZERO);
+        }
+        else if (!gComputed){
+            System.out.printf("\nAborted by user. g has not been computed, f is not %d\n", Const.OP_ZERO);
+        }
+        else {
+            System.out.println("\nAborted by user");
+        }
+        System.exit(Const.CANCELLATION_EXIT_CODE);
     }
 
     public static void main(String[] args) {
+        Signal.handle(new Signal(Const.CANCELLATION_SIGNAL), signal -> {
+            System.out.println("\nAborted by user, x has not been provided");
+            System.exit(Const.CANCELLATION_EXIT_CODE);
+        });
+
         Computations computations = createComputations(getCaseNo(args));
 
         int x = scanX();
-
         try {
             Pipe fPipe = createNonBlockingPipe();
             Pipe gPipe = createNonBlockingPipe();
             Thread fThread = startComputations(computations::computeF, x, fPipe.sink());
             Thread gThread = startComputations(computations::computeG, x, gPipe.sink());
 
-            boolean fComputed = false;
-            boolean gComputed = false;
-            var fResult = new Ref<Integer>();
-            var gResult = new Ref<Integer>();
+            Signal.handle(new Signal(Const.CANCELLATION_SIGNAL), signal -> {
+                onCancellation();
+            });
 
             while (!fComputed || !gComputed) {
                 if (!fComputed) {
