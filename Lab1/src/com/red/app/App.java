@@ -14,24 +14,50 @@ public class App {
     private static final Ref<Integer> fResult = new Ref<>();
     private static final Ref<Integer> gResult = new Ref<>();
 
-    private static Computations createComputations(Integer caseNo) {
-        if (caseNo != null && 1 <= caseNo && caseNo <= 6) {
-            return new DemoComputations(caseNo);
-        }
-
-        return new CustomComputations(x -> x, x -> x);
+    private static boolean isDemo(String[] args) {
+        return args.length == 1 && args[0].equals("-d");
     }
 
-    private static Integer getCaseNo(String[] args) {
-        if (args.length == 2 && args[0].equals("-d")) {
-            try {
-                return Integer.valueOf(args[1]);
-            }
-            catch (NumberFormatException e) {
-                return null;
-            }
+    private static Integer sleepAndReturn(Integer returnValue, int sleep) throws InterruptedException {
+        Thread.sleep(sleep);
+        return returnValue;
+    }
+
+    private static Integer defaultF(int x) {
+        try {
+            return switch (x) {
+                case (1) -> sleepAndReturn(1, Const.SECOND);
+                case (2) -> sleepAndReturn(72, 4 * Const.SECOND);
+                case (3) -> sleepAndReturn(Const.OP_ZERO, 2 * Const.SECOND);
+                case (4), (6) -> sleepAndReturn(null, Const.MINUTE);
+                case (5) -> sleepAndReturn(null, 0);
+                default -> null;
+            };
         }
-        return null;
+        catch (Exception e) {
+            return null;
+        }
+
+    }
+
+    private static Integer defaultG(int x) {
+        try {
+            return switch (x) {
+                case (1) -> sleepAndReturn(8, 2 * Const.SECOND);
+                case (2) -> sleepAndReturn(2, 0);
+                case (3), (5) -> sleepAndReturn(null, Const.MINUTE);
+                case (4) -> sleepAndReturn(Const.OP_ZERO, 0);
+                case (6) -> sleepAndReturn(null, 0);
+                default -> null;
+            };
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static Computations createComputations(boolean demo) {
+        return demo ? new DemoComputations() : new CustomComputations(App::defaultF, App::defaultG);
     }
 
     private static int scanX() {
@@ -115,7 +141,7 @@ public class App {
             System.exit(Const.CANCELLATION_EXIT_CODE);
         });
 
-        Computations computations = createComputations(getCaseNo(args));
+        Computations computations = createComputations(isDemo(args));
 
         int x = scanX();
         try {
