@@ -1,0 +1,14 @@
+Process.java
+ Process
+Results.java
+ Results
+SchedulingAlgorithm.java
+ SchedulingAlgorithm
+Common.java
+ Common
+LotteryAlgorithm.java
+ LotteryAlgorithm
+Scheduling.java
+ Scheduling
+PrioritizedLotteryAlgorithm.java
+ PrioritizedLotteryAlgorithm
